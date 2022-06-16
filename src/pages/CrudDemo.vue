@@ -198,16 +198,29 @@ export default {
 			})], {
 				type: "application/json"
 			}), null);
+			let response;
+			try {
+				response = await axios.post("http://localhost:8081/v1/api/files", formData, {
+					headers: {
+						X_TENANT_ID: '6dee40bc-7943-43ca-a5a3-f008c063ab05',
+						'Content-Type': undefined
+					}
+				});
+			} catch (e) {
+				console.log(e);
+				this.$toast.add({ severity: 'error', summary: 'Warning', detail: 'An error occured', life: 3000 });
+			}
+			const resp = response.data;
+			if (resp.responseHeader.success === true) {
+				this.$toast.add({ severity: 'success', summary: 'Success', detail: '', life: 3000 });
 
-			const response = await axios.post("http://localhost:8081/v1/api/files", formData, {
-				headers: {
-					X_TENANT_ID: '6dee40bc-7943-43ca-a5a3-f008c063ab05',
-					'Content-Type': undefined
-				}
-			});
-			console.log(response);
-			this.hideDialog();
+			} else {
+				this.$toast.add({ severity: 'error', summary: 'Error', detail: resp.responseHeader.message.text, life: 3000 });
+			}
+			this.productDialog = false;
+
 		},
+
 		editProduct(product) {
 			this.product = { ...product };
 			this.productDialog = true;
