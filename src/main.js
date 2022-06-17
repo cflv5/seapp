@@ -6,6 +6,7 @@ import './assets/styles/layout.scss';
 import './assets/demo/flags/flags.css';
 
 import { createApp, reactive } from 'vue';
+import { createStore } from 'vuex'
 import router from './router';
 import AppWrapper from './AppWrapper.vue';
 import PrimeVue from 'primevue/config';
@@ -198,5 +199,26 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 
 app.component('BlockViewer', BlockViewer);
 
+const store = createStore({
+    state() {
+        return {
+            tenantId: ""
+        }
+    },
+    mutations: {
+        setTenantId(state, tenantId) {
+            state.tenantId = tenantId;
+        }
+    },
+    getters: {
+        requestHeader(state) {
+            return {
+                X_TENANT_ID: state.teanantId
+            };
+        }
+    }
+});
+
+app.use(store);
 
 app.mount('#app');
