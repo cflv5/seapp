@@ -94,8 +94,6 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 
-import axios from 'axios'
-
 import CodeHighlight from './AppCodeHighlight';
 import BlockViewer from './BlockViewer';
 
@@ -200,6 +198,5 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 
 app.component('BlockViewer', BlockViewer);
 
-app.config.globalProperties.axios = axios.defaults
 
 app.mount('#app');
