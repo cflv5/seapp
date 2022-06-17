@@ -13,6 +13,10 @@ const routes = [
                 component: () => import('./components/Dashboard.vue')
             },
             {
+                path: '/files/:id',
+                component: () => import('./components/FileDetail.vue')
+            },
+            {
                 path: '/formlayout',
                 name: 'formlayout',
                 component: () => import('./components/FormLayoutDemo.vue')
