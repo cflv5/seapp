@@ -97,7 +97,7 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import CodeHighlight from './AppCodeHighlight';
 import BlockViewer from './BlockViewer';
 
-router.beforeEach(function (to, from, next) {
+router.beforeEach(function (_to, _from, next) {
     window.scrollTo(0, 0);
     next();
 });
