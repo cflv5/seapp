@@ -30,5 +30,10 @@ export default {
         const title = tenant.title ? tenant.title + " " : "";
         const middlename = tenant.middlename ? tenant.middlename + " " : "";
         return title + tenant.name + " " + middlename + tenant.surname;
+    },
+
+    formatDateTime(time) {
+        const d = new Date(time * 1000);
+        return d.toLocaleString("tr-TR");
     }
 }
