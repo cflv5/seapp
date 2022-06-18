@@ -121,8 +121,6 @@ export default {
   },
   methods: {
     showSignature(signature) {
-      // let routeData = this.$router.resolve('/signatures' + signature.id);
-      // window.open(routeData.href, "_blank");
       this.$router.push("/signatures/" + signature.id);
     },
     getFileNames() {
