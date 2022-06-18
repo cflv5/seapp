@@ -23,4 +23,20 @@ export default class SignService {
                 }
             });
     }
+
+    signDocument(body) {
+        return this.vue.$axios.post(this.url + "signatures/new", body)
+            .then((response) => {
+                const { data } = response;
+                if (data.responseHeader.success) {
+                    this.vue.$router.push("/signatures/" + data.signature.id);
+                } else {
+                    this.vue.$toast.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: data.responseHeader.message.text
+                    });
+                }
+            });
+    }
 }
