@@ -51,6 +51,13 @@ export default (store) => {
                     },
                     component: () => import('./components/Signature.vue')
                 },
+                {
+                    path: '/certificates',
+                    meta: {
+                        authenticated: true
+                    },
+                    component: () => import('./components/Certificates.vue')
+                },
             ]
         },
         {
