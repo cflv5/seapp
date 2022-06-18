@@ -37,6 +37,13 @@ export default (store) => {
                     },
                     component: () => import('./components/Signatures.vue')
                 },
+                {
+                    path: '/signatures/:id',
+                    meta: {
+                        authenticated: true
+                    },
+                    component: () => import('./components/Signature.vue')
+                },
             ]
         },
         {
