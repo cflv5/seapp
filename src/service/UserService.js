@@ -13,7 +13,7 @@ export default class UserService {
                 const { data } = response;
                 if (data.header.success) {
                     this.vue.$store.commit('setTenantId', data.tenantId);
-                    this.vue.$router.push("/crud");
+                    this.vue.$router.push("/files");
                 }
             });
     }

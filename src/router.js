@@ -122,12 +122,12 @@ export default (store) => {
                     component: () => import('./components/MiscDemo.vue')
                 },
                 {
-                    path: '/crud',
-                    name: 'crud',
+                    path: '/files',
+                    name: 'files',
                     meta: {
                         authenticated: true
                     },
-                    component: () => import('./pages/CrudDemo.vue')
+                    component: () => import('./pages/Files.vue')
                 },
                 {
                     path: '/timeline',
