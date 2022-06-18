@@ -7,7 +7,9 @@ import './assets/demo/flags/flags.css';
 
 import { createApp, reactive } from 'vue';
 import { createStore } from 'vuex'
-import router from './router';
+import createPersistedState from "vuex-persistedstate";
+import route from './router';
+import axios from './axios';
 import AppWrapper from './AppWrapper.vue';
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -98,11 +100,6 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import CodeHighlight from './AppCodeHighlight';
 import BlockViewer from './BlockViewer';
 
-router.beforeEach(function (_to, _from, next) {
-    window.scrollTo(0, 0);
-    next();
-});
-
 const app = createApp(AppWrapper);
 
 app.config.globalProperties.$appState = reactive({ theme: 'lara-light-indigo', darkTheme: false });
@@ -110,7 +107,6 @@ app.config.globalProperties.$appState = reactive({ theme: 'lara-light-indigo', d
 app.use(PrimeVue, { ripple: true, inputStyle: 'outlined' });
 app.use(ConfirmationService);
 app.use(ToastService);
-app.use(router);
 
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
@@ -211,14 +207,18 @@ const store = createStore({
         }
     },
     getters: {
-        requestHeader(state) {
-            return {
-                X_TENANT_ID: state.teanantId
-            };
+        tenantId(state) {
+            return state.tenantId
         }
-    }
+    },
+    plugins: [createPersistedState()],
 });
 
+const router = route(store)
+
+app.use(router);
+
+app.config.globalProperties.$axios = axios(store, router);
 app.use(store);
 
 app.mount('#app');
