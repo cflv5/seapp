@@ -25,16 +25,6 @@ export default (store) => {
                     component: () => import('./components/FileDetail.vue')
                 },
                 {
-                    path: '/login',
-                    name: 'login',
-                    component: () => import('./pages/Login.vue')
-                },
-                {
-                    path: '/logout',
-                    name: 'logout',
-                    component: () => import('./pages/Logout.vue')
-                },
-                {
                     path: '/formlayout',
                     name: 'formlayout',
                     component: () => import('./components/FormLayoutDemo.vue')
@@ -165,6 +155,16 @@ export default (store) => {
                     component: () => import('./components/IconsDemo.vue')
                 }
             ]
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('./pages/Login.vue')
+        },
+        {
+            path: '/logout',
+            name: 'logout',
+            component: () => import('./pages/Logout.vue')
         },
         {
             path: '/landing',
