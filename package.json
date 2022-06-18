@@ -36,6 +36,7 @@
 		"sjcl": "^1.0.8",
 		"vue": "3.2.9",
 		"vue-router": "^4.0.0-0",
-		"vuex": "^4.0.2"
+		"vuex": "^4.0.2",
+		"vuex-persistedstate": "^4.1.0"
 	}
 }
