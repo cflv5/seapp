@@ -138,7 +138,6 @@
 import { FilterMatchMode } from "primevue/api";
 import asm from "asmcrypto-lite";
 import axios from "axios";
-import ProductService from "../service/ProductService";
 
 export default {
   data() {
@@ -156,9 +155,7 @@ export default {
       ],
     };
   },
-  productService: null,
   created() {
-    this.productService = new ProductService();
     this.initFilters();
   },
   async mounted() {
