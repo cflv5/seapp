@@ -15,7 +15,7 @@
         icon="pi pi-download"
         label="Verify"
         class="p-button-rounded p-button-success"
-        @click="verifySignature"
+        @click="verifySignatureDialog = true"
       ></Button>
       <ul class="list-none p-0 m-0">
         <li
@@ -70,10 +70,41 @@
       </div>
     </div>
   </div>
+
+  <Dialog
+    v-model:visible="verifySignatureDialog"
+    :style="{ minwidth: '450px' }"
+    header="Verify Signature"
+    :modal="true"
+  >
+    <Card style="width: 25rem">
+      <template #content>
+        <p>
+          The process will first download the file whose signature will be
+          confirmed. It will then hash the contents of the file and send it with
+          the request to be used in the approval process.
+        </p>
+      </template>
+    </Card>
+    <template #footer>
+      <Button
+        label="Verify"
+        class="p-button-outlined p-button-success"
+        @click="verifySignature"
+      />
+      <Button
+        label="Close"
+        class="p-button-outlined"
+        @click="verifySignatureDialog = false"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script>
 import util from "../util/ServiceUtil";
+import SignService from "../service/SignService";
+import asm from "asmcrypto-lite";
 
 export default {
   data() {
@@ -86,12 +117,14 @@ export default {
       access: false,
       signatureNotFound: false,
       mounted: false,
-      showCertificateDialog: false,
+      verifySignatureDialog: false,
       util,
     };
   },
 
   async created() {
+    this.signService = new SignService(this);
+
     this.$axios
       .get("http://localhost:8082/v1/api/signatures/" + this.signatureId)
       .then((response) => {
@@ -115,10 +148,50 @@ export default {
 
   methods: {
     showCertificate() {
-      const routeData = this.$router.resolve("/certificates/" + this.certificate.certificateId);
+      const routeData = this.$router.resolve(
+        "/certificates/" + this.certificate.certificateId
+      );
       window.open(routeData.href, "_blank");
     },
-    verifySignature() {},
+    verifySignature() {
+      const file = this.file;
+      const signature = this.signature;
+      const verifyRequest = {};
+      this.verifySignatureDialog = false;
+      const that = this;
+      this.$axios
+        .get("http://localhost:8081/v1/api/files/content/" + this.file.fileId, {
+          headers: { X_TENANT_ID: this.$store.getters.tenantId },
+          responseType: "blob",
+        })
+        .then(async function (response) {
+          const { data } = response;
+          let fileName = file.name;
+          const fileBlob = new Blob([data], {
+            type: file.contentType,
+          });
+          const url = window.URL.createObjectURL(fileBlob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+
+          verifyRequest.fileHash = asm.SHA256.hex(await fileBlob.arrayBuffer());
+          verifyRequest.fileId = file.fileId;
+          verifyRequest.signatureId = signature.id;
+
+          that.signService.verifySignature(verifyRequest);
+        })
+        .catch((e) => {
+          console.log("Verification process failed", e);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Verification process failed.",
+          });
+        });
+    },
     visitFile() {
       const routeData = this.$router.resolve("/files/" + this.file.fileId);
       window.open(routeData.href, "_blank");
