@@ -8,7 +8,7 @@
           icon="pi pi-pencil"
           label="Sign"
           class="p-button-rounded p-button-success"
-          @click="downloadFile"
+          @click="signFile"
         ></Button>
         <Button
           icon="pi pi-download"
@@ -226,6 +226,9 @@ export default {
   },
 
   methods: {
+    signFile() {
+      this.$router.push("/signatures/new?fileId=" + this.file.fileId);
+    },
     handleError(e) {
       if (e instanceof AxiosError && e.response.status === 404) {
         this.fileNotFound = true;
