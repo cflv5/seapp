@@ -1,7 +1,7 @@
 <template>
   <div class="layout-topbar">
     <router-link to="/" class="layout-topbar-logo">
-      <img alt="Logo" src="images/logo-dark.svg" />
+      <img alt="Logo" src="/images/logo-dark.svg" />
       <span>SAKAI</span>
     </router-link>
     <button
