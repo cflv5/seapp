@@ -12,10 +12,7 @@ export default (store) => {
                 {
                     path: '',
                     name: 'dashboard',
-                    meta: {
-                        authenticated: true
-                    },
-                    component: () => import('./components/Dashboard.vue')
+                    redirect: '/files'
                 },
                 {
                     path: '/files/:id',
