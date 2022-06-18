@@ -43,7 +43,7 @@
         <li
           class="flex align-items-center py-3 px-2 my-3 border-top-1 border-top-1 surface-border flex-wrap"
         >
-          <div class="text-500 w-6 md:w-2 font-medium">Owner</div>
+          <div class="text-500 w-6 md:w-2 font-medium">Certificate</div>
           <div
             class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3"
           >
