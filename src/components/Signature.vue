@@ -6,7 +6,7 @@
         Signature Information
       </div>
       <Button
-        icon="pi pi-pencil"
+        icon="pi pi-download"
         label="Download Signature"
         class="p-button-rounded p-button-danger mx-2"
         @click="downloadSignature"
