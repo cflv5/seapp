@@ -28,7 +28,7 @@ export default {
 
     getTenantFullName(tenant) {
         const title = tenant.title ? tenant.title + " " : "";
-        const middlename = tenant.middlename ? tenant.middlename + " " : "";
+        const middlename = tenant.middleName ? tenant.middleName + " " : "";
         return title + tenant.name + " " + middlename + tenant.surname;
     },
 
