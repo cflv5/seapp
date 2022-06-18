@@ -32,20 +32,20 @@
             @click="navigate"
             class="p-link layout-topbar-button"
           >
-            <em class="pi pi-user"></em>
+            <em class="pi pi-user mx-1"></em>
             <span>Profile</span>
           </button>
         </router-link>
       </li>
       <li>
-        <router-link to="/signout" v-slot="{ href, navigate }">
+        <router-link to="/logout" v-slot="{ href, navigate }">
           <button
             :href="href"
             @click="navigate"
             class="p-link layout-topbar-button"
           >
-            <em class="pi pi-sign-out"></em>
-            <span>Signout</span>
+            <em class="pi pi-sign-out mx-1"></em>
+            <span>Logout</span>
           </button>
         </router-link>
       </li>
