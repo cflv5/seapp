@@ -105,6 +105,7 @@
 import util from "../util/ServiceUtil";
 import SignService from "../service/SignService";
 import asm from "asmcrypto-lite";
+import { AxiosError } from "axios";
 
 export default {
   data() {
@@ -143,10 +144,24 @@ export default {
           });
         }
       })
-      .catch((e) => this.$toast.add(util.handleAxiosError(e)));
+      .catch((e) => {
+        this.handleError(e);
+      });
   },
 
   methods: {
+    handleError(e) {
+      if (e instanceof AxiosError && e.response.status === 404) {
+        this.fileNotFound = true;
+      } else {
+        this.$toast.add({
+          severity: "error",
+          summary: "Warning",
+          detail: "An error occured. Please reload the page",
+          life: 3000,
+        });
+      }
+    },
     showCertificate() {
       const routeData = this.$router.resolve(
         "/certificates/" + this.certificate.certificateId

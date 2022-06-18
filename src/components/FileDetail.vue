@@ -206,13 +206,13 @@ export default {
         },
       })
       .then((response) => {
+        this.mounted = true;
         if (response.data.responseHeader.success) {
           this.access = true;
           this.file = response.data.file;
           this.fileAccessType = this.file.accessType;
           this.getFileOwner(response.data.file.tenantId);
           this.getTenantsFilePolicy();
-          this.mounted = true;
         } else {
           this.$toast.add({
             severity: "error",
@@ -222,12 +222,15 @@ export default {
           });
         }
       })
-      .catch((e) => this.$toast.add(util.handleAxiosError(e)));
+      .catch((e) => {
+        this.mounted = true;
+        this.handleError(e);
+      });
   },
 
   methods: {
     signFile() {
-      this.$router.push("/signatures/new?fileId=" + this.file.fileId);
+      this.$router.push("/signatures/new/" + this.file.fileId);
     },
     handleError(e) {
       if (e instanceof AxiosError && e.response.status === 404) {
@@ -255,7 +258,6 @@ export default {
             data.policies.forEach(async (element) => {
               this.fetchUserEmail(element);
             });
-            console.log(this.fileAccessPolicyList);
           }
         });
     },
