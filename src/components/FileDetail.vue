@@ -4,67 +4,40 @@
     <div class="surface-section" v-if="access && file">
       <div class="font-medium text-3xl text-900 mb-3">File Information</div>
       <div class="text-500 mb-5 flex justify-content-between">
-        <Button
-          icon="pi pi-pencil"
-          label="Sign"
-          class="p-button-rounded p-button-success"
-          @click="downloadFile"
-        ></Button>
-        <Button
-          icon="pi pi-download"
-          label="Download"
-          class="p-button-rounded p-button-danger"
-          @click="downloadFile"
-        ></Button>
+        <Button icon="pi pi-pencil" label="Sign" class="p-button-rounded p-button-success"
+          @click="downloadFile"></Button>
+        <Button icon="pi pi-download" label="Download" class="p-button-rounded p-button-danger"
+          @click="downloadFile"></Button>
       </div>
       <ul class="list-none p-0 m-0">
-        <li
-          class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap"
-        >
+        <li class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap">
           <div class="text-500 w-6 md:w-2 font-medium">Name</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             {{ file.name }}
           </div>
         </li>
-        <li
-          class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap"
-        >
+        <li class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap">
           <div class="text-500 w-6 md:w-2 font-medium">Size</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             {{ calculateSize(file.length) }}
           </div>
         </li>
-        <li
-          class="flex align-items-center py-3 px-2 my-3 border-top-1 border-top-1 surface-border flex-wrap"
-        >
+        <li class="flex align-items-center py-3 px-2 my-3 border-top-1 border-top-1 surface-border flex-wrap">
           <div class="text-500 w-6 md:w-2 font-medium">Owner</div>
-          <div
-            class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3"
-          >
-            <Skeleton
-              v-if="!file.ownerName"
-              width="10rem"
-              class="mb-2"
-            ></Skeleton>
+          <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+            <Skeleton v-if="!file.ownerName" width="10rem" class="mb-2"></Skeleton>
             <div v-else>
               {{ file.ownerName }}
             </div>
           </div>
         </li>
-        <li
-          class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
-        >
+        <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
           <div class="text-500 w-6 md:w-2 font-medium">Access</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             <Chip :label="file.accessType" class="mr-2"></Chip>
           </div>
           <div class="w-6 md:w-2 flex justify-content-end" v-if="true">
-            <Button
-              label="Edit"
-              icon="pi pi-user-edit"
-              class="p-button-text"
-              @click="updateAccessType()"
-            ></Button>
+            <Button label="Edit" class="p-button-outlined" @click="updateAccessType()"></Button>
           </div>
         </li>
       </ul>
@@ -81,55 +54,32 @@
       </div>
     </div>
 
-    <Dialog
-      v-model:visible="updateAccessTypeDialog"
-      :style="{ minwidth: '450px' }"
-      header="Update"
-      :modal="true"
-    >
+    <Dialog v-model:visible="updateAccessTypeDialog" :style="{ minwidth: '450px' }" header="Update" :modal="true">
       <div v-if="file" class="card">
         <span class="m-2 flex align-items-center">
           <span>
             <strong>{{ file.name }}</strong> has access type
           </span>
-          <SelectButton
-            v-model="file.accessType"
-            :options="['PRIVATE', 'PUBLIC']"
-            class="mx-2"
-            @change="changeAccessType"
-          />
+          <SelectButton v-model="file.accessType" :options="['PRIVATE', 'PUBLIC']" class="mx-2"
+            @change="changeAccessType" />
         </span>
       </div>
       <div v-if="file.accessType === 'PRIVATE'" class="card">
         <span> Access Policy List: </span>
-        <Skeleton
-          v-if="!fileAccessPolicyList"
-          height="4rem"
-          class="mt-2"
-        ></Skeleton>
+        <Skeleton v-if="!fileAccessPolicyList" height="4rem" class="mt-2"></Skeleton>
         <div v-else class="m-2">
           <ul class="px-1">
-            <li
-              v-for="(item, i) in fileAccessPolicyList"
-              :key="item"
-              class="flex align-items-center justify-content-between my-2"
-            >
+            <li v-for="(item, i) in fileAccessPolicyList" :key="item"
+              class="flex align-items-center justify-content-between my-2">
               <span>
                 {{ item.email }}
               </span>
               <span>
-                <Dropdown
-                  v-model="fileAccessPolicyList[i].actionModel"
-                  :options="['VIEW', 'EDIT']"
-                  class="mx-1"
-                  @change="updatePolicy($event, fileAccessPolicyList[i].id)"
-                />
+                <Dropdown v-model="fileAccessPolicyList[i].actionModel" :options="['VIEW', 'EDIT']" class="mx-1"
+                  @change="updatePolicy($event, fileAccessPolicyList[i].id)" />
 
-                <Button
-                  icon="pi pi-times"
-                  class="p-button-rounded p-button-danger"
-                  @click="deleteFileRight(item.id)"
-                ></Button>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-danger"
+                  @click="deleteFileRight(item.id)"></Button>
               </span>
             </li>
           </ul>
@@ -137,12 +87,7 @@
       </div>
 
       <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="updateAccessTypeDialog = false"
-        />
+        <Button label="No" icon="pi pi-times" class="p-button-text" @click="updateAccessTypeDialog = false" />
         <Button label="Yes" icon="pi pi-check" class="p-button-text" />
       </template>
     </Dialog>
@@ -151,6 +96,7 @@
 
 <script>
 import axios, { AxiosError } from "axios";
+import util from '../util/ServiceUtil';
 
 export default {
   data() {
@@ -232,9 +178,7 @@ export default {
 
           if (data.responseHeader.success) {
             const { tenant } = data;
-            this.file.ownerName = `${tenant.title} ${tenant.name} ${
-              tenant.middleName ? tenant.middleName[0] : ""
-            }. ${tenant.surname}`;
+            this.file.ownerName = util.getTenantFullName(tenant);
           } else {
             this.file.ownerName = "Owner could not found";
           }
@@ -328,9 +272,9 @@ export default {
       axios
         .post(
           "http://localhost:8081/v1/api/rights/delete/" +
-            id +
-            "/file/" +
-            this.file.fileId,
+          id +
+          "/file/" +
+          this.file.fileId,
           null,
           {
             headers: {
@@ -370,7 +314,7 @@ export default {
         });
     },
     updatePolicy(e, p) {
-        console.log(e, p);
+      console.log(e, p);
     }
   },
 };
