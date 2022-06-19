@@ -45,7 +45,7 @@
             ></Skeleton>
             <span v-else>
               <Badge
-                :value="verification.success ? 'Verified': 'Not Verified'"
+                :value="verification.success ? 'Verified' : 'Not Verified'"
                 size="large"
                 :severity="verification.success ? 'success' : 'danger'"
               ></Badge>
@@ -92,10 +92,10 @@ export default {
         "http://localhost:8082/v1/api/certificates/detail/" + this.certificateId
       )
       .then((response) => {
+        this.mounted = true;
         if (response.data.responseHeader.success) {
           this.access = true;
           this.certificate = response.data.certificate;
-          this.mounted = true;
           this.fetchTenant();
           this.verifyCertificate();
         } else {
@@ -108,6 +108,7 @@ export default {
         }
       })
       .catch((e) => {
+        this.mounted = true;
         this.handleError(e);
       });
   },
@@ -126,9 +127,9 @@ export default {
       }
     },
     verifyCertificate() {
-        this.verification = {
-            success: true
-        }
+      this.verification = {
+        success: true,
+      };
     },
     fetchTenant() {
       this.$axios
@@ -152,15 +153,14 @@ export default {
       this.$axios
         .get(
           "http://localhost:8082/v1/api/certificates/" +
-            this.certificate.certificateId
+            this.certificate.certificateId,
+          {
+            responseType: "blob",
+          }
         )
         .then(function (response) {
           const { data } = response;
-          const url = window.URL.createObjectURL(
-            new Blob([data], {
-              type: "application/x-x509-user-cert",
-            })
-          );
+          const url = window.URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute("download", certificate.name + ".crt");
