@@ -478,11 +478,7 @@ export default {
         .then(function (response) {
           const { data } = response;
           let fileName = file.name;
-          const url = window.URL.createObjectURL(
-            new Blob([data], {
-              type: file.contentType,
-            })
-          );
+          const url = window.URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute("download", fileName);

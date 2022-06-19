@@ -129,12 +129,12 @@ export default {
     this.$axios
       .get("http://localhost:8082/v1/api/signatures/" + this.signatureId)
       .then((response) => {
+        this.mounted = true;
         if (response.data.responseHeader.success) {
           this.access = true;
           this.signature = response.data.signature;
           this.fetchFile();
           this.fetchCertificate();
-          this.mounted = true;
         } else {
           this.$toast.add({
             severity: "error",
@@ -146,13 +146,14 @@ export default {
       })
       .catch((e) => {
         this.handleError(e);
+        this.mounted = true;
       });
   },
 
   methods: {
     handleError(e) {
       if (e instanceof AxiosError && e.response.status === 404) {
-        this.fileNotFound = true;
+        this.signatureNotFound = true;
       } else {
         this.$toast.add({
           severity: "error",
@@ -182,10 +183,7 @@ export default {
         .then(async function (response) {
           const { data } = response;
           let fileName = file.name;
-          const fileBlob = new Blob([data], {
-            type: file.contentType,
-          });
-          const url = window.URL.createObjectURL(fileBlob);
+          const url = window.URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute("download", fileName);
