@@ -128,9 +128,35 @@ export default {
       }
     },
     verifyCertificate() {
-      this.verification = {
-        success: true,
-      };
+      this.$axios
+        .get(
+          "http://localhost:8082/v1/api/certificates/validate/" +
+            this.certificate.certificateId
+        )
+        .then((resp) => {
+          this.verification = {};
+          const { data } = resp;
+          if (data.responseHeader.success) {
+            this.verification.success = true;
+          } else {
+            this.verification.success = false;
+            this.$toast.add({
+              severity: "error",
+              summary: "Error",
+              detail: resp.data.responseHeader.message.text,
+            });
+          }
+        })
+        .catch((e) => {
+          this.verification = { success: false };
+          console.log(e);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail:
+              "Error occred while validating the certificate, which does not indicate that certificate is valid.",
+          });
+        });
     },
     fetchTenant() {
       this.$axios
