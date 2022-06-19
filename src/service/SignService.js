@@ -12,13 +12,15 @@ export default class SignService {
                     this.vue.$toast.add({
                         severity: "success",
                         summary: "Success",
-                        detail: "Signature successfully verified."
+                        detail: "Signature successfully verified.",
+                        life: 3000
                     });
                 } else {
                     this.vue.$toast.add({
                         severity: "Warn",
                         summary: "Warning",
-                        detail: data.responseHeader.message.text
+                        detail: data.responseHeader.message.text,
+                        life: 300
                     });
                 }
             });
