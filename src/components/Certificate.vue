@@ -71,6 +71,7 @@
 <script>
 import util from "../util/ServiceUtil";
 import { AxiosError } from "axios";
+import FileSaver from "file-saver";
 
 export default {
   data() {
@@ -160,12 +161,7 @@ export default {
         )
         .then(function (response) {
           const { data } = response;
-          const url = window.URL.createObjectURL(data);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", certificate.name + ".crt");
-          document.body.appendChild(link);
-          link.click();
+          FileSaver.saveAs(data, certificate.name + ".crt");
         })
         .catch((e) => {
           console.log(e);

@@ -179,6 +179,7 @@
 <script>
 import axios, { AxiosError } from "axios";
 import util from "../util/ServiceUtil";
+import FileSaver from "file-saver";
 
 export default {
   data() {
@@ -477,13 +478,7 @@ export default {
         })
         .then(function (response) {
           const { data } = response;
-          let fileName = file.name;
-          const url = window.URL.createObjectURL(data);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", fileName);
-          document.body.appendChild(link);
-          link.click();
+          FileSaver.saveAs(data, file.name);
         });
     },
     updatePolicy(e, p) {

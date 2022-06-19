@@ -44,7 +44,12 @@
           class="flex align-items-center py-3 px-2 my-3 border-top-1 border-top-1 surface-border flex-wrap"
         >
           <div class="text-500 w-6 md:w-2 font-medium">Password</div>
-          <Password v-model="certificatePassword" :feedback="false" :toggleMask="true" autocomplete="new-password"/>
+          <Password
+            v-model="certificatePassword"
+            :feedback="false"
+            :toggleMask="true"
+            autocomplete="new-password"
+          />
         </li>
         <li
           class="flex align-items-center justify-content-end py-3 px-2 border-top-1 border-top-1 surface-border flex-wrap"
@@ -119,6 +124,7 @@ import util from "../util/ServiceUtil";
 import SignService from "../service/SignService";
 import { AxiosError } from "axios";
 import asm from "asmcrypto-lite";
+import FileSaver from "file-saver";
 
 export default {
   data() {
@@ -188,23 +194,15 @@ export default {
         })
         .then(async function (response) {
           const { data } = response;
-          let fileName = file.name;
-          const fileBlob = new Blob([data], {
-            type: file.contentType,
-          });
-          const url = window.URL.createObjectURL(fileBlob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", fileName);
-          document.body.appendChild(link);
-          link.click();
 
-          signRequest.fileHash = asm.SHA256.hex(await fileBlob.arrayBuffer());
+          signRequest.fileHash = asm.SHA256.hex(await data.arrayBuffer());
           signRequest.fileId = file.fileId;
           signRequest.certificateId = that.certificate;
           signRequest.certificatePassword = that.certificatePassword;
 
-          await that.signService.signDocument(signRequest);
+          await that.signService.signDocument(signRequest).then(() => {
+            FileSaver.saveAs(data, file.name);
+          });
         })
         .catch((e) => {
           console.log("Sign process failed", e);

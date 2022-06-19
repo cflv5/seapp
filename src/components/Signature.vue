@@ -84,6 +84,11 @@
           confirmed. It will then hash the contents of the file and send it with
           the request to be used in the approval process.
         </p>
+        <hr />
+        <span class="flex align-items-center">
+          <Checkbox v-model="saveFile" :binary="true" />
+          <span class="mx-1">Save file after verification</span>
+        </span>
       </template>
     </Card>
     <template #footer>
@@ -105,6 +110,7 @@
 import util from "../util/ServiceUtil";
 import SignService from "../service/SignService";
 import asm from "asmcrypto-lite";
+import FileSaver from "file-saver";
 import { AxiosError } from "axios";
 
 export default {
@@ -120,6 +126,7 @@ export default {
       mounted: false,
       verifySignatureDialog: false,
       util,
+      saveFile: false,
     };
   },
 
@@ -182,19 +189,16 @@ export default {
         })
         .then(async function (response) {
           const { data } = response;
-          let fileName = file.name;
-          const url = window.URL.createObjectURL(data);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", fileName);
-          document.body.appendChild(link);
-          link.click();
 
-          verifyRequest.fileHash = asm.SHA256.hex(await fileBlob.arrayBuffer());
+          verifyRequest.fileHash = asm.SHA256.hex(await data.arrayBuffer());
           verifyRequest.fileId = file.fileId;
           verifyRequest.signatureId = signature.id;
 
-          that.signService.verifySignature(verifyRequest);
+          that.signService.verifySignature(verifyRequest).then(() => {
+            if (that.saveFile) {
+              FileSaver.saveAs(data, file.name);
+            }
+          });
         })
         .catch((e) => {
           console.log("Verification process failed", e);
@@ -269,20 +273,14 @@ export default {
       const signature = this.signature;
       this.$axios
         .get(
-          "http://localhost:8082/v1/api/signatures/file/" + this.signature.id
+          "http://localhost:8082/v1/api/signatures/file/" + this.signature.id,
+          {
+            responseType: "blob",
+          }
         )
         .then(function (response) {
           const { data } = response;
-          const url = window.URL.createObjectURL(
-            new Blob([data], {
-              type: "text/plain",
-            })
-          );
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", signature.id);
-          document.body.appendChild(link);
-          link.click();
+          FileSaver.saveAs(data, signature.id);
         })
         .catch((e) => {
           console.log(e);
