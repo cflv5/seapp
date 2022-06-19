@@ -3,6 +3,18 @@
     <div class="col-12">
       <div class="card">
         <Toast />
+        <Toolbar class="mb-4">
+          <template v-slot:start>
+            <div class="my-2">
+              <Button
+                label="New"
+                icon="pi pi-plus"
+                class="p-button-success mr-2"
+                @click="openNewDialog = true"
+              />
+            </div>
+          </template>
+        </Toolbar>
         <DataTable
           ref="dt"
           :value="certificates"
@@ -92,6 +104,49 @@
       />
     </template>
   </Dialog>
+  <Dialog
+    v-model:visible="openNewDialog"
+    :style="{ minwidth: '450px' }"
+    header="Are you sure?"
+    :modal="true"
+    :closable="false"
+  >
+    <Card style="width: 25rem">
+      <template #content>
+        <p>
+          This process will create a public/private key pair and X.509
+          Certificate using the public key. Then, sign the certificate using
+          YTUCESE root certificate. <br /><br />
+          A password is mandotory to secure the private key.
+        </p>
+
+        <div class="mb-2">
+          <div class="text-500 w-6 md:w-2 font-medium">Name</div>
+          <InputText type="text" v-model="certificateName" />
+        </div>
+        <div class="text-500 w-6 md:w-2 font-medium">Password</div>
+        <Password
+          v-model="certificatePassword"
+          :feedback="false"
+          :toggleMask="true"
+          autocomplete="new-password"
+        />
+      </template>
+    </Card>
+    <template #footer>
+      <Button
+        label="Create"
+        :disabled="!certificatePassword || !certificateName"
+        class="p-button-outlined"
+        @click="createCertificate"
+      />
+      <Button
+        label="Close"
+        class="p-button-outlined"
+        @click="openNewDialog = false"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script>
@@ -106,7 +161,10 @@ export default {
       },
       util,
       certificates: null,
+      certificatePassword: null,
       selectedCertificate: null,
+      certificateName: null,
+      openNewDialog: false,
     };
   },
 
@@ -114,6 +172,44 @@ export default {
     this.fetchTenantsCertificates();
   },
   methods: {
+    createCertificate() {
+      const body = {
+        name: this.certificateName,
+        password: this.certificatePassword,
+      };
+      this.$axios
+        .post("http://localhost:8082/v1/api/certificates/new", body)
+        .then((resp) => {
+          this.openNewDialog = false;
+          const { data } = resp;
+          if (data.responseHeader.success) {
+            this.fetchTenantsCertificates();
+            this.$toast.add({
+              severity: "success",
+              summary: "Success",
+              detail: "Certificate successfully created",
+              time: 3000,
+            });
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: "Error",
+              detail: data.responseHeader.message.text,
+              time: 3000,
+            });
+          }
+        })
+        .catch((e) => {
+          this.openNewDialog = false;
+          console.log(e);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Could not create certificate",
+            time: 3000,
+          });
+        });
+    },
     fetchTenantsCertificates() {
       this.$axios
         .get("http://localhost:8082/v1/api/certificates/mine")
@@ -141,7 +237,7 @@ export default {
               severity: "success",
               summary: "Success",
               detail: "Certificate successfully deleted",
-              time: 3000
+              time: 3000,
             });
             this.fetchTenantsCertificates();
           } else {
@@ -149,7 +245,7 @@ export default {
               severity: "error",
               summary: "Error",
               detail: data.responseHeader.message.text,
-              time: 3000
+              time: 3000,
             });
           }
         })
@@ -159,10 +255,10 @@ export default {
             severity: "error",
             summary: "Error",
             detail: "Could not delete the certificate",
-            time: 3000
+            time: 3000,
           });
         });
-        this.selectedCertificate = null;
+      this.selectedCertificate = null;
     },
   },
 
