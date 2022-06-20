@@ -17,8 +17,7 @@
                         <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
                         <Password id="password1" :feedback="false" v-model="password" placeholder="Password"
                             :toggleMask="true" class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"
-                            @keyup.enter="login">
-                        </Password>
+                            @keyup.enter="login"/>
 
                         <Button label="Sign In" class="w-full p-3 text-xl" @click="login"></button>
                     </div>

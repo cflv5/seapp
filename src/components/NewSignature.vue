@@ -48,7 +48,7 @@
             v-model="certificatePassword"
             :feedback="false"
             :toggleMask="true"
-            autocomplete="new-password"
+            autocomplete="one-time-code"
           />
         </li>
         <li
