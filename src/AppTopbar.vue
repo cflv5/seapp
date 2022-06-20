@@ -1,8 +1,8 @@
 <template>
   <div class="layout-topbar">
     <router-link to="/" class="layout-topbar-logo">
-      <img alt="Logo" src="/images/logo-dark.svg" />
-      <span>SAKAI</span>
+      <img alt="Logo" src="/images/logo-pistis.png" />
+      <span>PISTIS</span>
     </router-link>
     <button
       class="p-link layout-menu-button layout-topbar-button"
