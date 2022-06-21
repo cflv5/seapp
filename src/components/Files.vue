@@ -158,27 +158,36 @@ export default {
   created() {
     this.initFilters();
   },
-  async mounted() {
-    let response;
-    try {
-      response = await axios.get("http://localhost:8081/v1/api/files/mine", {
-        headers: {
-          X_TENANT_ID: this.$store.getters.tenantId,
-        },
-      });
-    } catch (e) {
-      console.log(e);
-      this.$toast.add({
-        severity: "error",
-        summary: "Warning",
-        detail: "An error occured. Please reload the page",
-        life: 3000,
-      });
-      return;
-    }
-    this.files = response.data.files;
+  mounted() {
+    this.fetchFiles();
   },
   methods: {
+    fetchFiles() {
+      return this.$axios
+        .get("http://localhost:8081/v1/api/files/mine")
+        .then((resp) => {
+          const { data } = resp;
+          if (data.responseHeader.success) {
+            this.files = data.files;
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: "Warning",
+              detail: data.responseHeader.message.text,
+              life: 3000,
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          this.$toast.add({
+            severity: "error",
+            summary: "Warning",
+            detail: "An error occured while fetching the users files",
+            life: 3000,
+          });
+        });
+    },
     formatLength(value) {
       if (value > 1024 && value < 1048576) {
         return Math.round(value / 1024) + " Kb";
@@ -251,10 +260,11 @@ export default {
       }
       const resp = response.data;
       if (resp.responseHeader.success === true) {
+        this.fetchFiles();
         this.$toast.add({
           severity: "success",
           summary: "Success",
-          detail: "",
+          detail: "File uploaded successfully",
           life: 3000,
         });
       } else {
