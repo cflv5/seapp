@@ -270,7 +270,7 @@ export default {
         .catch((e) => this.$toast.add(util.handleAxiosError(e)));
     },
     downloadSignature() {
-      const signature = this.signature;
+      const file = this.file;
       this.$axios
         .get(
           "http://localhost:8082/v1/api/signatures/file/" + this.signature.id,
@@ -280,7 +280,7 @@ export default {
         )
         .then(function (response) {
           const { data } = response;
-          FileSaver.saveAs(data, signature.id);
+          FileSaver.saveAs(data, "base64-sign-" + file.name + ".txt");
         })
         .catch((e) => {
           console.log(e);
