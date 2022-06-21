@@ -39,9 +39,11 @@
           <div class="text-500 w-6 md:w-2 font-medium">Owner</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             <Skeleton v-if="!tenant" width="10rem" class="mb-2"></Skeleton>
-            <span v-else>
-              {{ util.getTenantFullName(tenant) }}
-            </span>
+            <Button
+              :label="util.getTenantFullName(tenant)"
+              class="p-button-text p-0"
+              @click="visitTenant"
+            ></Button>
           </div>
         </li>
         <li
@@ -220,6 +222,10 @@ export default {
           life: 3000,
         });
       }
+    },
+    visitTenant() {
+      const routeData = this.$router.resolve("/profile/" + this.tenant.tenantId);
+      window.open(routeData.href, "_blank");
     },
     async fetchCertificate(id) {
       return this.$axios
