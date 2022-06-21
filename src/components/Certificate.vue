@@ -7,7 +7,7 @@
       </div>
       <Button
         icon="pi pi-download"
-        label="Download Signature"
+        label="Download Certificate"
         class="p-button-rounded p-button-warn mx-2"
         @click="downloadCertificate"
       ></Button>
@@ -17,7 +17,20 @@
         >
           <div class="text-500 w-6 md:w-2 font-medium">Name</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
-            {{ certificate.name }}
+            <div class="flex justify-content-between align-items-center">
+              <span>
+                {{ certificate.name }}
+              </span>
+              <span>
+                <ProgressSpinner v-if="!tenantX509Cert" />
+                <Button
+                  v-else
+                  class="p-1 p-button-outlined"
+                  label="View"
+                  @click="viewDetail = true"
+                />
+              </span>
+            </div>
           </div>
         </li>
         <li
@@ -66,12 +79,90 @@
       </div>
     </div>
   </div>
+
+  <Dialog
+    v-model:visible="viewDetail"
+    :style="{ minwidth: '450px' }"
+    header="Certificate Detail"
+    :modal="true"
+  >
+    <Card style="width: 45rem">
+      <template #content>
+        <ul class="list-none p-0 m-0">
+          <li
+            class="flex align-items-center py-3 px-2 my-3 surface-border flex-wrap"
+          >
+            <div class="text-500 w-6 md:w-2 font-medium mr-1">
+              Serial Number
+            </div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <span>
+                {{ tenantX509Cert.serialNumber }}
+              </span>
+            </div>
+          </li>
+          <li
+            class="flex align-items-center py-3 px-2 my-3 surface-border flex-wrap"
+          >
+            <div class="text-500 w-6 md:w-2 font-medium mr-1">Subject</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <span>
+                {{ tenantX509Cert.subject }}
+              </span>
+            </div>
+          </li>
+          <li
+            class="flex align-items-center py-3 px-2 my-3 surface-border flex-wrap"
+          >
+            <div class="text-500 w-6 md:w-2 font-medium mr-1">Issuer</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <span>
+                {{ tenantX509Cert.issuer }}
+              </span>
+            </div>
+          </li>
+          <li
+            class="flex align-items-center py-3 px-2 my-3 surface-border flex-wrap"
+          >
+            <div class="text-500 w-6 md:w-2 font-medium mr-1">Signature</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <span>
+                {{ tenantX509Cert.signatureAlgorithm.name }} with
+                {{ tenantX509Cert.signatureAlgorithm.hash.name }}
+              </span>
+            </div>
+          </li>
+          <li
+            class="flex align-items-center py-3 px-2 my-3 surface-border flex-wrap"
+          >
+            <div class="text-500 w-6 md:w-2 font-medium mr-1">
+              Valid Through
+            </div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <span>
+                {{ tenantX509Cert.notBefore.toLocaleDateString() }} -
+                {{ tenantX509Cert.notAfter.toLocaleDateString() }}
+              </span>
+            </div>
+          </li>
+        </ul>
+      </template>
+    </Card>
+    <template #footer>
+      <Button
+        label="Close"
+        class="p-button-outlined"
+        @click="viewDetail = false"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script>
 import util from "../util/ServiceUtil";
 import { AxiosError } from "axios";
 import FileSaver from "file-saver";
+import * as x509 from "@peculiar/x509";
 
 export default {
   data() {
@@ -83,6 +174,9 @@ export default {
       certificateNotFound: false,
       verification: null,
       mounted: false,
+      certContent: null,
+      viewDetail: false,
+      tenantX509Cert: null,
       util,
     };
   },
@@ -127,36 +221,43 @@ export default {
         });
       }
     },
-    verifyCertificate() {
-      this.$axios
-        .get(
-          "http://localhost:8082/v1/api/certificates/validate/" +
-            this.certificate.certificateId
-        )
-        .then((resp) => {
-          this.verification = {};
-          const { data } = resp;
-          if (data.responseHeader.success) {
-            this.verification.success = true;
-          } else {
-            this.verification.success = false;
-            this.$toast.add({
-              severity: "error",
-              summary: "Error",
-              detail: resp.data.responseHeader.message.text,
-            });
-          }
+    async fetchCertificate(id) {
+      return this.$axios
+        .get("http://localhost:8082/v1/api/certificates/" + id, {
+          responseType: "blob",
         })
-        .catch((e) => {
-          this.verification = { success: false };
-          console.log(e);
-          this.$toast.add({
-            severity: "error",
-            summary: "Error",
-            detail:
-              "Error occred while validating the certificate, which does not indicate that certificate is valid.",
-          });
+        .then(function (response) {
+          return response.data;
         });
+    },
+    async verifyCertificate() {
+      try {
+        this.certContent = await this.fetchCertificate(
+          this.certificate.certificateId
+        );
+        const tenantX509Cert = new x509.X509Certificate(
+          await this.certContent.arrayBuffer()
+        );
+        this.tenantX509Cert = tenantX509Cert;
+        const rootCert = await this.fetchCertificate("ytucese");
+        const rootX509Cert = new x509.X509Certificate(
+          await rootCert.arrayBuffer()
+        );
+        console.log("Tenant Cert: ", tenantX509Cert);
+        console.log("YTUCESE: ", rootX509Cert);
+        this.verification = {
+          success: await tenantX509Cert.verify(rootX509Cert),
+        };
+        console.log(
+          "Is certificate issued by YTUCESE: ",
+          this.verification.success
+        );
+      } catch (error) {
+        console.log(error);
+        this.verification = {
+          success: false,
+        };
+      }
     },
     fetchTenant() {
       this.$axios
@@ -176,23 +277,19 @@ export default {
         .catch((e) => this.$toast.add(util.handleAxiosError(e)));
     },
     downloadCertificate() {
-      const certificate = this.certificate;
-      this.$axios
-        .get(
-          "http://localhost:8082/v1/api/certificates/" +
-            this.certificate.certificateId,
-          {
-            responseType: "blob",
-          }
-        )
-        .then(function (response) {
-          const { data } = response;
-          FileSaver.saveAs(data, certificate.name + ".crt");
-        })
-        .catch((e) => {
-          console.log(e);
-          this.$toast.add(util.handleAxiosError(e));
-        });
+      if (this.certContent) {
+        FileSaver.saveAs(this.certContent, this.certificate.name + ".crt");
+      } else {
+        const certificate = this.certificate;
+        this.fetchCertificate()
+          .then(function (data) {
+            FileSaver.saveAs(data, certificate.name + ".crt");
+          })
+          .catch((e) => {
+            console.log(e);
+            this.$toast.add(util.handleAxiosError(e));
+          });
+      }
     },
   },
 };
