@@ -278,6 +278,7 @@ export default {
             }
           )
           .then((response) => {
+            this.newPolicy.email = "";
             const { data } = response;
             if (data.responseHeader.success) {
               this.fetchFileAccessPolcies();
@@ -296,14 +297,15 @@ export default {
               });
             }
           })
-          .catch(() =>
+          .catch(() => {
+            this.newPolicy.email = "";
             this.$toast.add({
               severity: "error",
               summary: "Error",
               detail: "Could not add the access policy",
               life: 3000,
-            })
-          );
+            });
+          });
       }
     },
     valiatePolicyRequest() {
