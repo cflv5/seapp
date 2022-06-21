@@ -65,6 +65,13 @@ export default (store) => {
                     },
                     component: () => import('./components/Certificate.vue')
                 },
+                {
+                    path: '/profile/:id?',
+                    meta: {
+                        authenticated: true
+                    },
+                    component: () => import('./components/Profile.vue')
+                },
             ]
         },
         {
