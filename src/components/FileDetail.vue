@@ -483,8 +483,27 @@ export default {
           FileSaver.saveAs(data, file.name);
         });
     },
-    updatePolicy(e, p) {
-      console.log(e, p);
+    updatePolicy(e, id) {
+      this.$axios
+        .post("http://localhost:8081/v1/api/rights/" + id, {
+          action: e.value,
+        })
+        .then((resp) => {
+          this.$toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: resp.data.responseHeader.message.text,
+            life: 3000,
+          });
+        }).catch(error => {
+          console.log(error);
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "An error occured",
+            life: 3000,
+          });
+        });
     },
   },
 };
