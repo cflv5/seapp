@@ -19,4 +19,4 @@ COPY . .
 RUN npm run build
 
 EXPOSE 8083
-ENTRYPOINT [ "http-server dist -p 8083" ]
+ENTRYPOINT [ "http-server", "dist", "-p 8083" ]
