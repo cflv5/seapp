@@ -29,6 +29,14 @@
         <li
           class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap"
         >
+          <div class="text-500 w-6 md:w-2 font-medium">Upload Date</div>
+          <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+            {{ new Date(file.createdAt * 1000).toLocaleString("tr-TR") }}
+          </div>
+        </li>
+        <li
+          class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap"
+        >
           <div class="text-500 w-6 md:w-2 font-medium">Size</div>
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             {{ calculateSize(file.length) }}
@@ -46,9 +54,12 @@
               width="10rem"
               class="mb-2"
             ></Skeleton>
-            <div v-else>
-              {{ file.ownerName }}
-            </div>
+            <Button
+              :label="file.ownerName"
+              class="p-button-text p-0"
+              @click="visitTenant"
+              v-else
+            ></Button>
           </div>
         </li>
         <li
@@ -244,6 +255,12 @@ export default {
           life: 3000,
         });
       }
+    },
+    visitTenant() {
+      const routeData = this.$router.resolve(
+        "/profile/" + this.file.tenantId
+      );
+      window.open(routeData.href, "_blank");
     },
     fetchFileAccessPolcies() {
       return axios
@@ -495,7 +512,8 @@ export default {
             detail: resp.data.responseHeader.message.text,
             life: 3000,
           });
-        }).catch(error => {
+        })
+        .catch((error) => {
           console.log(error);
           this.$toast.add({
             severity: "error",
