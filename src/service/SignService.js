@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 export default class SignService {
     constructor(vue) {
         this.vue = vue;
-        this.url = process.env.VUE_APP_SIGN_SERVICE_URL;
+        this.url = "http://localhost:8082/v1/api/";
     }
 
     verifySignature(body) {

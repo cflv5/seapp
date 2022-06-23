@@ -1,7 +1,7 @@
 export default class UserService {
     constructor(vue) {
         this.vue = vue;
-        this.url = process.env.VUE_APP_USER_SERVICE_URL;
+        this.url = "http://localhost:8080/v1/api/";
     }
 
     login(email, password) {
