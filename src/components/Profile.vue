@@ -35,7 +35,7 @@
                   @uploader="uploader"
                 />
                 <Button
-                  class="p-button-text p-1"
+                  class="p-button-text p-1 block m-auto"
                   label="Clear"
                   v-if="profilePicture !== '/images/noimage.png'"
                   @click="clearConfirmDiaolog = true"
@@ -98,7 +98,7 @@ export default {
   data() {
     return {
       tenantId: this.$route.params.id || this.$store.getters.tenantId,
-      isProfile: this.$route.params.id === this.$store.getters.tenantId,
+      isProfile: "",
       user: null,
       tenant: null,
       access: false,
@@ -112,6 +112,7 @@ export default {
   },
 
   async created() {
+    this.isProfile = this.tenantId === this.$store.getters.tenantId;
     this.$axios
       .get("http://localhost:8080/v1/api/users/" + this.tenantId)
       .then((response) => {
