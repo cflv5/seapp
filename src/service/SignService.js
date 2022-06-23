@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 export default class SignService {
     constructor(vue) {
         this.vue = vue;
@@ -5,7 +7,11 @@ export default class SignService {
     }
 
     verifySignature(body) {
-        return this.vue.$axios.post(this.url + "signatures/verify", body)
+        return this.vue.$axios.post(this.url + "signatures/verify", body, {
+            headers: {
+                X_REQUEST_ID: uuid()
+            }
+        })
             .then(resp => {
                 const { data } = resp;
                 if (data.responseHeader.success) {
@@ -27,7 +33,11 @@ export default class SignService {
     }
 
     signDocument(body) {
-        return this.vue.$axios.post(this.url + "signatures/new", body)
+        return this.vue.$axios.post(this.url + "signatures/new", body, {
+            headers: {
+                X_REQUEST_ID: uuid()
+            }
+        })
             .then((response) => {
                 const { data } = response;
                 if (data.responseHeader.success) {
