@@ -53,7 +53,11 @@
           class="flex align-items-center py-3 px-2 my-3 border-top-1 surface-border flex-wrap"
         >
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
-            <InputText type="text" placeholder="Surname" v-model="user.surname" />
+            <InputText
+              type="text"
+              placeholder="Surname"
+              v-model="user.surname"
+            />
           </div>
         </li>
         <li
@@ -96,12 +100,15 @@ export default {
         return;
       }
       this.$axios
-        .post("http://localhosts:8080/v1/api/users/register", this.user)
+        .post("http://localhost:8080/v1/api/users/register", {
+          user: this.user,
+        })
         .then((resp) => {
           const { data } = resp;
           if (data.responseHeader.success) {
             this.$router.push("/login");
           } else {
+            this.user = {};
             this.$toast.add({
               severity: "error",
               summary: "Error",
@@ -109,6 +116,16 @@ export default {
               time: 3000,
             });
           }
+        })
+        .catch((e) => {
+          console.log(e);
+          this.user = {};
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "An error occured",
+            time: 3000,
+          });
         });
     },
     validateForm() {
