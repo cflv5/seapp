@@ -31,6 +31,7 @@
               class="mb-2"
             ></Skeleton>
             <Dropdown
+              v-else
               v-model="certificate"
               :options="certificates"
               optionLabel="name"
