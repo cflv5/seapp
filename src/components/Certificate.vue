@@ -40,6 +40,7 @@
           <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
             <Skeleton v-if="!tenant" width="10rem" class="mb-2"></Skeleton>
             <Button
+              v-else
               :label="util.getTenantFullName(tenant)"
               class="p-button-text p-0"
               @click="visitTenant"
@@ -121,6 +122,12 @@
               <span>
                 {{ tenantX509Cert.issuer }}
               </span>
+              <br>
+              <Button
+                label="Download"
+                class="p-button-text p-0"
+                @click="downloadRootCert"
+              ></Button>
             </div>
           </li>
           <li
@@ -179,6 +186,7 @@ export default {
       certContent: null,
       viewDetail: false,
       tenantX509Cert: null,
+      rootCert: null,
       util,
     };
   },
@@ -223,6 +231,11 @@ export default {
         });
       }
     },
+    downloadRootCert() {
+      if(this.rootCert) {
+        FileSaver.saveAs(this.rootCert, "YTUCESE.crt");
+      }
+    },
     visitTenant() {
       const routeData = this.$router.resolve("/profile/" + this.tenant.tenantId);
       window.open(routeData.href, "_blank");
@@ -246,6 +259,7 @@ export default {
         );
         this.tenantX509Cert = tenantX509Cert;
         const rootCert = await this.fetchCertificate("ytucese");
+        this.rootCert = rootCert;
         const rootX509Cert = new x509.X509Certificate(
           await rootCert.arrayBuffer()
         );
