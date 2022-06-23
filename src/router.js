@@ -72,6 +72,13 @@ export default (store) => {
                     },
                     component: () => import('./components/Profile.vue')
                 },
+                {
+                    path: '/logs',
+                    meta: {
+                        authenticated: true
+                    },
+                    component: () => import('./components/Logs.vue')
+                },
             ]
         },
         {
