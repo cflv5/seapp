@@ -91,6 +91,11 @@ export default (store) => {
             name: 'logout',
             component: () => import('./pages/Logout.vue')
         },
+        {
+            path: '/register',
+            name: 'register',
+            component: () => import('./pages/Register.vue')
+        },
     ];
 
     const router = createRouter({
