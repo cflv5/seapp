@@ -1,4 +1,4 @@
-#  Sakai Admin Template for Vue  
+# Template for Vue  
  
 ### Live Preview
  
